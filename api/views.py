@@ -8,12 +8,14 @@ from api.serializers import RegisterUserSerializer
 
 User = get_user_model()
 
+
 class RegisterUserView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterUserSerializer
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
-        token, created = Token.objects.get_or_create(user_id=response.data["id"])
+        token, created = Token.objects.get_or_create(
+            user_id=response.data["id"])
         response.data['token'] = str(token)
-        return response
+        return Response(response, status=status.HTTP_201_CREATED)
