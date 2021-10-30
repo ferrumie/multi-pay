@@ -3,7 +3,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from django.contrib.auth import get_user_model
-
+from rest_framework.views import APIView
 from api.serializers import RegisterUserSerializer
 
 User = get_user_model()
@@ -19,3 +19,8 @@ class RegisterUserView(CreateAPIView):
             user_id=response.data["id"])
         response.data['token'] = str(token)
         return Response(response.data, status=status.HTTP_201_CREATED)
+
+
+class PaymentView(APIView):
+    pass
+
