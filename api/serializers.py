@@ -3,6 +3,8 @@ from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from django.contrib.auth import password_validation
 
+from transaction.models import Transaction
+
 User = get_user_model()
 
 
@@ -46,3 +48,9 @@ class RegisterUserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = '__all__'
