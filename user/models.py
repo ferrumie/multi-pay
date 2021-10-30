@@ -23,6 +23,7 @@ class User(AbstractUser):
                     'verified. Default is False`'))
 
     USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
 
