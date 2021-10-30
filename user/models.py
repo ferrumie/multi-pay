@@ -11,11 +11,16 @@ from django.utils.translation import gettext_lazy as _
 class User(AbstractUser):
 
     username = None
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_('Email Address'), unique=True)
 
     phone_number = PhoneNumberField(
         _("Phone number"), blank=True,
         help_text=_("User's phone number "))
+
+    is_verified = models.BooleanField(
+        _('Verified'), default=False,
+        help_text=_('Designates whether this user should be treated as '
+                    'verified. Default is False`'))
 
     USERNAME_FIELD = 'email'
 
@@ -23,3 +28,23 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class UserApiKey(models.Model):
+    """Model for adding api key for different payment platforms"""
+
+    PAYMENT_CHOICES = (
+        ('PAYPAL', 'user'),
+        ('PAYSTACK', 'admin'),
+        ('STRIPE', 'owner'),
+        ('FLUTTERWAVE', 'staff'),
+        ('CRYPTO', 'crypto')
+
+    )
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    api_key = models.CharField(
+        _('Verified'), max_length=255, unique=True)
+    platform = models.CharField(
+        _('Payment Platform'), max_length=15,
+        choices=PAYMENT_CHOICES)
