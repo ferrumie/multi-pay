@@ -18,4 +18,4 @@ class RegisterUserView(CreateAPIView):
         token, created = Token.objects.get_or_create(
             user_id=response.data["id"])
         response.data['token'] = str(token)
-        return Response(response, status=status.HTTP_201_CREATED)
+        return Response(response.data, status=status.HTTP_201_CREATED)
