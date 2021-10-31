@@ -2,7 +2,7 @@ from django.urls import path
 from api.authentication import CustomAuthToken
 
 from api.views import (
-    ApiKeyDetail, ApiKeyView, PaymentView,
+    ApiKeyDetail, ApiKeyView, PaymentConfirmationView, PaymentView,
     RegisterUserView, TransactionList)
 
 
@@ -20,7 +20,8 @@ urlpatterns = [
          ApiKeyDetail.as_view(), name='apikey-detail'),
 
     # Payment
-    path('payment/', PaymentView.as_view(), name='payment')
+    path('payment/', PaymentView.as_view(), name='payment'),
+    path('payment/confirm', PaymentConfirmationView.as_view(), name='payment-confirm'),
 
 
 ]

@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from api.permissions import IsOwner
 from api.processor import PaymentProcessor
-from api.serializers import ApiKeySerializer, PaymentSerializer, RegisterUserSerializer, TransactionSerializer
+from api.serializers import ApiKeySerializer, PaymentConfirmSerializer, PaymentSerializer, RegisterUserSerializer, TransactionSerializer
 from api.utils.redirect import get_redirect_path
 from transaction.models import Transaction
 from user.models import UserApiKey
@@ -125,5 +125,37 @@ class PaymentView(APIView):
             except KeyboardInterrupt:
                 return Response({'message': 'An error occured'},
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PaymentConfirmationView(APIView):
+    """
+    Confirms if the payment is successful
+    """
+    permission_classes = (IsAuthenticated,)
+    serializer_class = PaymentConfirmSerializer
+
+    def post(self, request, *args, **kwargs):
+        """
+        tba        
+        """
+        user = request.user
+        ser = self.serializer_class(data=request.data)
+        if ser.is_valid():
+            platform = ser.validated_data.get('platform')
+            transaction_id = ser.validated_data.get('transaction_id')
+        # Get the API key
+            try:
+                user_api_key = UserApiKey.objects.filter(
+                    user=user).get(platform=platform[0])
+            except UserApiKey.DoesNotExist:
+                return Response({'message': 'You dont have an apikey for this platform'})
+            api_key = user_api_key.api_key
+            res = PaymentProcessor().verify(
+                transaction_id=transaction_id,
+                method=platform[1], user=user, api_key=api_key)
+            if res:
+                return Response({'message': 'Payment'}, status=status.HTTP_200_OK)
         else:
             return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)

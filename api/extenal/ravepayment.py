@@ -19,6 +19,7 @@ class RavePayment(Request, PaymentInterface):
         redirect_url = payload.get("redirect_url")
         currency = payload.get('currency')
         api_key = payload.get('api_key')
+        print(tx_ref)
         payload = {
             "user_id": user.id,
             "tx_ref": tx_ref,
@@ -45,18 +46,26 @@ class RavePayment(Request, PaymentInterface):
         self.data = payload
         response = dict()
         response = super(RavePayment, self).send()
+        print(response)
+        # Extracting Transaction id from the link
+        link = response['data']['link']
+        link_list = link.split('/')
+        transaction_id = link_list[-1]
         res = {
             "link": response['data']['link'],
-            "status": response['status']
+            "status": response['status'],
+            "transaction_id": transaction_id
         }
         return res
 
     def verify(self, payload):
+        user = payload.get("user")
+        api_key = payload.get('api_key')
         transaction_id = payload.get("transaction_id")
         tx_ref = payload.get("tx_ref")
         self.method = 'get'
         self.api = f'transactions/{transaction_id}/verify'
-        self.headers['Authorization'] = f'Bearer {os.getenv("FLUTTERWAVE_SECRET_KEY")}'
+        self.headers['Authorization'] = f'Bearer {api_key}'
         response = dict()
         try:
             if transaction_id:

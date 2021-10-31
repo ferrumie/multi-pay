@@ -111,6 +111,21 @@ class PaymentSerializer(serializers.Serializer):
     logo = serializers.URLField(required=False)
 
 
+class PaymentConfirmSerializer(serializers.Serializer):
+    PAYMENT_CHOICES = (
+        ('PAYPAL', 'paypal'),
+        ('PAYSTACK', 'paystack'),
+        ('STRIPE', 'stripe'),
+        ('FLUTTERWAVE', 'rave_payment'),
+        ('CRYPTO', 'crypto')
+
+    )
+
+    platform = ChoiceField(choices=PAYMENT_CHOICES)
+    transaction_id = serializers.CharField(
+        max_length=255, required=True)
+
+
 class MyAuthTokenSerializer(serializers.Serializer):
     email = serializers.EmailField(label=_("Email"))
     password = serializers.CharField(
