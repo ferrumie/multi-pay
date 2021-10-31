@@ -2,6 +2,8 @@ import os
 import json
 import requests
 
+from api.exceptions import ServiceUnavailable
+
 
 class Request(object):
     """
@@ -52,4 +54,12 @@ class Request(object):
                     self.path, headers=self.headers, 
                     data=self.data, timeout=60)
             except requests.ConnectionError as e:
-                raise ServerError
+                raise ServiceUnavailable(str(e))
+            except Exception as e:
+                raise Exception(str(e))
+
+            response = json.loads(self.res.content)
+            if not 200 <= self.res.status_code < 300:
+                raise Exception
+            else:
+                return response
