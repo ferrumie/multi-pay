@@ -8,6 +8,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
+from api.permissions import IsOwner
 from api.serializers import ApiKeySerializer, RegisterUserSerializer, TransactionSerializer
 from transaction.models import Transaction
 from user.models import UserApiKey
@@ -57,7 +58,7 @@ class ApiKeyDetail(RetrieveUpdateDestroyAPIView):
     """
     Retrieve, Update or delete an API Key
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsOwner,)
     queryset = UserApiKey.objects.all()
     serializer_class = ApiKeySerializer
     lookup_url_kwarg = 'key_id'
