@@ -6,7 +6,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
-from api.serializers import AddApiKeySerializer, RegisterUserSerializer, TransactionSerializer
+from api.serializers import ApiKeySerializer, RegisterUserSerializer, TransactionSerializer
 from transaction.models import Transaction
 from user.models import UserApiKey
 
@@ -26,8 +26,8 @@ class RegisterUserView(CreateAPIView):
         return Response(response.data, status=status.HTTP_201_CREATED)
 
 
-class AddApiKeyView(ListCreateAPIView):
-    serializer_class = AddApiKeySerializer
+class ApiKeyView(ListCreateAPIView):
+    serializer_class = ApiKeySerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):

@@ -1,7 +1,7 @@
 from django.urls import path
 from api.authentication import CustomAuthToken
 
-from api.views import RegisterUserView, TransactionList
+from api.views import ApiKeyView, RegisterUserView, TransactionList
 
 
 urlpatterns = [
@@ -10,10 +10,10 @@ urlpatterns = [
     path('user/view-token/', CustomAuthToken.as_view(), name='token-view'),
 
     # Transaction List
-    path('transactions/', TransactionList.as_view(), name='transaction-list')
+    path('transactions/', TransactionList.as_view(), name='transaction-list'),
 
     # Add API Key
-    path('user/addkey/')
+    path('user/apikeys/', ApiKeyView.as_view(), name='apikeys')
 
 
 ]
