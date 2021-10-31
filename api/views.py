@@ -27,7 +27,6 @@ class RegisterUserView(CreateAPIView):
 
 
 class AddApiKeyView(ListCreateAPIView):
-    queryset = User.objects.all()
     serializer_class = AddApiKeySerializer
     permission_classes = (IsAuthenticated,)
 
