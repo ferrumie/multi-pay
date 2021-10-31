@@ -13,7 +13,7 @@ class Transaction(models.Model):
 
     user = models.ForeignKey('user.User', on_delete=models.CASCADE)
 
-    status = models.CharField( max_length=50, blank=True)
+    status = models.CharField(max_length=50, blank=True)
 
     payment_type = models.CharField(
         _('Payment Type'), max_length=50, blank=True
@@ -24,3 +24,5 @@ class Transaction(models.Model):
     transaction_id = models.CharField(max_length=50, blank=True)
 
     transaction_ref = models.CharField(max_length=250, blank=True)
+
+    date_created = models.DateTimeField(_('Date Created'), blank=True, null=True)

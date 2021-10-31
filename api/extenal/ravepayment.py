@@ -3,6 +3,7 @@ from api.exceptions import FlutterException
 
 from api.payment import PaymentInterface
 from api.request import Request
+from transaction.models import Transaction
 
 
 class RavePayment(Request, PaymentInterface):
@@ -62,7 +63,8 @@ class RavePayment(Request, PaymentInterface):
         user = payload.get("user")
         api_key = payload.get('api_key')
         transaction_id = payload.get("transaction_id")
-        tx_ref = payload.get("tx_ref")
+        transaction_ref = payload.get("tx_ref")
+        method = payload.get("method")
         self.method = 'get'
         self.api = f'transactions/{transaction_id}/verify'
         self.headers['Authorization'] = f'Bearer {api_key}'
@@ -70,6 +72,21 @@ class RavePayment(Request, PaymentInterface):
         try:
             if transaction_id:
                 response = super(RavePayment, self).send()
+                tran = Transaction.objects.filter(user=user).filter(transaction_id=transaction_id)
+                if not tran:
+                    transaction = {
+                        'amount': response['data']['amount'],
+                        'transaction_id': transaction_id,
+                        'transaction_ref': transaction_ref,
+                        'platform': method,
+                        'user': user,
+                        'status': response['status'],
+                        'payment_type': response['data']['payment_type'],
+                        'account_id': response['data']['account_id']
+                    }
+                    transact = Transaction.objects.create(**transaction)
+                    transact.save()
+
                 return response
             raise ValueError({"message": "Transaction id is required"})
         except Exception as e:
