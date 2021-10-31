@@ -15,9 +15,8 @@ class RavePayment(Request, PaymentInterface):
         anon_user = user.is_anonymous
         tx_ref = payload.get("tx_ref")
         amount = payload.get("amount")
-        plan_id = payload.get("plan_id")
         title = payload.get("title")
-        logo = settings.EXTRA_PAYMENT_DETAILS['logo']
+        logo = payload.get('logo')
         description = payload.get("description")
         redirect_url = payload.get("redirect_url")
         currency = settings.OSCAR_DEFAULT_CURRENCY

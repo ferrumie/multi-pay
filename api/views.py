@@ -11,6 +11,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from api.permissions import IsOwner
 from api.serializers import ApiKeySerializer, PaymentSerializer, RegisterUserSerializer, TransactionSerializer
+from api.utils.redirect import get_redirect_path
 from transaction.models import Transaction
 from user.models import UserApiKey
 from api.payment import PaymentProcessor
@@ -115,7 +116,7 @@ class PaymentView(APIView):
                 method=platform,
                 tx_ref=reference,
                 amount=amount,
-                redirect_url=get_redirect_path('seller_payment'),
+                redirect_url=get_redirect_path(),
                 title=title,
                 logo=logo,
                 currency=currency,
