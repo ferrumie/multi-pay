@@ -11,29 +11,27 @@ class RavePayment(Request, PaymentInterface):
 
     def pay(self, payload):
         user = payload.get("user")
-        guest_email = payload.get("guest_email")
-        anon_user = user.is_anonymous
         tx_ref = payload.get("tx_ref")
         amount = payload.get("amount")
         title = payload.get("title")
         logo = payload.get('logo')
         description = payload.get("description")
         redirect_url = payload.get("redirect_url")
-        currency = settings.OSCAR_DEFAULT_CURRENCY
+        currency = payload.get('currency')
+        api_key = payload.get('api_key')
         payload = {
             "user_id": user.id,
             "tx_ref": tx_ref,
             "amount": amount,
             "currency": currency,
             "meta": {
-                "user_id": user.id,
-                "plan_id": plan_id
+                "user_id": user.id
             },
             "payment_options": "card, account, banktransfer, ussd, barter, credit, payattitude, paga",
             "redirect_url": redirect_url,
             "customer": {
-                "name": f'{user.first_name} {user.last_name}' if not anon_user else 'ANON',
-                "email": user.email if not anon_user else guest_email
+                "name": f'{user.first_name} {user.last_name}',
+                "email": user.email
             },
             "customizations": {
                 "title": title,
@@ -43,7 +41,7 @@ class RavePayment(Request, PaymentInterface):
         }
         self.method = 'post'
         self.api = 'payments'
-        self.headers['Authorization'] = f'Bearer {os.getenv("FLUTTERWAVE_SECRET_KEY")}'
+        self.headers['Authorization'] = f'Bearer {api_key}'
         self.data = payload
         response = dict()
         response = super(RavePayment, self).send()
