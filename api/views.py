@@ -6,7 +6,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
-from api.serializers import RegisterUserSerializer
+from api.serializers import AddApiKeySerializer, RegisterUserSerializer, TransactionSerializer
 from transaction.models import Transaction
 
 
@@ -25,9 +25,23 @@ class RegisterUserView(CreateAPIView):
         return Response(response.data, status=status.HTTP_201_CREATED)
 
 
+class AddApiKeyView(CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = AddApiKeySerializer
+    permission_classes = (IsAuthenticated,)
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        token, created = Token.objects.get_or_create(
+            user_id=response.data["id"])
+        response.data['token'] = str(token)
+        return Response(response.data, status=status.HTTP_201_CREATED)
+
+
 class TransactionList(ListAPIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = (IsAuthenticated,)
+    serializer_class = TransactionSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -51,7 +65,7 @@ class PaymentView(APIView):
         gotahia_plan_id = request.data.get('plan_id')
         if gotahia_plan_id:
             try:
-               
+
                 amount = str(gotahia_plan.amount)
                 res = PaymentProcessor().pay(
                     user=user,

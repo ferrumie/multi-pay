@@ -12,5 +12,8 @@ urlpatterns = [
     # Transaction List
     path('transactions/', TransactionList.as_view(), name='transaction-list')
 
+    # Add API Key
+    path('user/addkey/')
+
 
 ]

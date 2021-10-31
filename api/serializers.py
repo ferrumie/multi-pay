@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth import password_validation
 
 from transaction.models import Transaction
+from user.models import UserApiKey
 
 User = get_user_model()
 
@@ -53,4 +54,10 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
+        fields = '__all__'
+
+
+class AddApiKeySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserApiKey
         fields = '__all__'

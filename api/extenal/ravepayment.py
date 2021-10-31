@@ -1,6 +1,7 @@
 import os
 
 from api.payment import PaymentInterface, PaymentMethodFactory
+from api.request import Request
 
 
 class RavePayment(Request, PaymentInterface):
