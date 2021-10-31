@@ -121,9 +121,7 @@ class PaymentConfirmSerializer(serializers.Serializer):
 
     )
 
-    platform = ChoiceField(choices=PAYMENT_CHOICES)
-    transaction_id = serializers.CharField(
-        max_length=255, required=True)
+    platform = ChoiceField(choices=PAYMENT_CHOICES, required=False)
 
 
 class MyAuthTokenSerializer(serializers.Serializer):

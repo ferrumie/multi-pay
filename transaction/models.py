@@ -13,7 +13,7 @@ class Transaction(models.Model):
 
     user = models.ForeignKey('user.User', on_delete=models.CASCADE)
 
-    success = models.BooleanField(blank=True, null=True)
+    status = models.CharField( max_length=50, blank=True)
 
     payment_type = models.CharField(
         _('Payment Type'), max_length=50, blank=True
@@ -21,6 +21,6 @@ class Transaction(models.Model):
 
     account_id = models.CharField(max_length=50, blank=True)
 
-    tranaction_id = models.CharField(max_length=50, blank=True)
+    transaction_id = models.CharField(max_length=50, blank=True)
 
     transaction_ref = models.CharField(max_length=250, blank=True)

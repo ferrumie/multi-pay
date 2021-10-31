@@ -1,4 +1,5 @@
 import uuid
+import json
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status
@@ -121,7 +122,10 @@ class PaymentView(APIView):
                     logo=logo,
                     currency=currency,
                     description=description)
-                return Response(res, status=status.HTTP_200_OK)
+                response = Response(res, status=status.HTTP_200_OK)
+                response.set_cookie(
+                    'platform', ["FLUTTERWAVE", "rave_payment"])
+                return response
             except KeyboardInterrupt:
                 return Response({'message': 'An error occured'},
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -134,29 +138,32 @@ class PaymentConfirmationView(APIView):
     Confirms if the payment is successful
     """
     permission_classes = (IsAuthenticated,)
-    serializer_class = PaymentConfirmSerializer
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         """
-        tba        
+        Redirect View for the confirmation of the payment        
         """
+
         user = request.user
-        ser = self.serializer_class(data=request.data)
-        if ser.is_valid():
-            platform = ser.validated_data.get('platform')
-            transaction_id = ser.validated_data.get('transaction_id')
+        transaction_ref = kwargs.get('tx_ref')
+        transaction_id = request.GET.get('transaction_id')
+        print(transaction_id)
+        platform = request.COOKIES['platform']
+        platform = eval(platform)
+
         # Get the API key
-            try:
-                user_api_key = UserApiKey.objects.filter(
-                    user=user).get(platform=platform[0])
-            except UserApiKey.DoesNotExist:
-                return Response({'message': 'You dont have an apikey for this platform'})
-            api_key = user_api_key.api_key
-            res = PaymentProcessor().verify(
-                transaction_id=transaction_id,
-                method=platform[1], user=user, api_key=api_key)
-            if res['status'] == 'success':
-                
-                return Response({'message': res['message']}, status=status.HTTP_200_OK)
+        try:
+            user_api_key = UserApiKey.objects.filter(
+                user=user).get(platform=platform[0])
+        except UserApiKey.DoesNotExist:
+            return Response({'message': 'You dont have an apikey for this platform'})
+        api_key = user_api_key.api_key
+        res = PaymentProcessor().verify(
+            transaction_id=transaction_id,
+            method=platform[1], user=user, api_key=api_key, 
+            transaction_ref=transaction_ref)
+        print(res)
+        if res['status'] == 'success':
+            return Response({'message': res['message']}, status=status.HTTP_200_OK)
         else:
-            return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': res['message']}, status=status.HTTP_400_BAD_REQUEST)

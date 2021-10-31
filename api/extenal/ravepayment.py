@@ -70,9 +70,7 @@ class RavePayment(Request, PaymentInterface):
         try:
             if transaction_id:
                 response = super(RavePayment, self).send()
-                if (response.get('status') == 'success'):
-                    return response
-                return {'message': False}
+                return response
             raise ValueError({"message": "Transaction id is required"})
         except Exception as e:
             raise FlutterException(str(e))
