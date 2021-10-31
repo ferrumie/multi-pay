@@ -145,12 +145,11 @@ class PaymentConfirmationView(APIView):
         """
 
         user = request.user
-        transaction_ref = kwargs.get('tx_ref')
+        transaction_ref = request.GET.get('tx_ref')
         transaction_id = request.GET.get('transaction_id')
-        print(transaction_id)
         platform = request.COOKIES['platform']
         platform = eval(platform)
-
+        method = platform[1]
         # Get the API key
         try:
             user_api_key = UserApiKey.objects.filter(
@@ -160,10 +159,10 @@ class PaymentConfirmationView(APIView):
         api_key = user_api_key.api_key
         res = PaymentProcessor().verify(
             transaction_id=transaction_id,
-            method=platform[1], user=user, api_key=api_key, 
+            method=method, user=user, api_key=api_key,
             transaction_ref=transaction_ref)
-        print(res)
         if res['status'] == 'success':
-            return Response({'message': res['message']}, status=status.HTTP_200_OK)
+
+            return Response(res, status=status.HTTP_200_OK)
         else:
             return Response({'message': res['message']}, status=status.HTTP_400_BAD_REQUEST)

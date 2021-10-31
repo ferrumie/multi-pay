@@ -25,4 +25,5 @@ class Transaction(models.Model):
 
     transaction_ref = models.CharField(max_length=250, blank=True)
 
-    date_created = models.DateTimeField(_('Date Created'), blank=True, null=True)
+    date_created = models.DateTimeField(
+        _('Date Created'), blank=True, null=True)

@@ -21,7 +21,6 @@ class RavePayment(Request, PaymentInterface):
         redirect_url = payload.get("redirect_url")
         currency = payload.get('currency')
         api_key = payload.get('api_key')
-        print(redirect_url)
         payload = {
             "user_id": user.id,
             "tx_ref": tx_ref,
@@ -63,7 +62,8 @@ class RavePayment(Request, PaymentInterface):
         user = payload.get("user")
         api_key = payload.get('api_key')
         transaction_id = payload.get("transaction_id")
-        transaction_ref = payload.get("tx_ref")
+        transaction_ref = payload.get("transaction_ref")
+        print(payload)
         method = payload.get("method")
         self.method = 'get'
         self.api = f'transactions/{transaction_id}/verify'

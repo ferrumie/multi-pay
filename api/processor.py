@@ -10,12 +10,12 @@ class PaymentProcessor:
     @classmethod
     def pay(cls, method, **kwargs):
         payment_method = payment_methods.select_payment_method(method)
-        print(payment_method)
         payload = kwargs
         return payment_method().pay(payload)
 
     @classmethod
     def verify(cls, method, **kwargs):
         payment_method = payment_methods.select_payment_method(method)
+        kwargs['method'] = method
         payload = kwargs
         return payment_method().verify(payload)
