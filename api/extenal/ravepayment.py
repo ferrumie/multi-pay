@@ -22,7 +22,7 @@ class RavePayment(Request, PaymentInterface):
         payload = {
             "user_id": user.id,
             "tx_ref": tx_ref,
-            "amount": amount,
+            "amount": str(amount),
             "currency": currency,
             "meta": {
                 "user_id": user.id
