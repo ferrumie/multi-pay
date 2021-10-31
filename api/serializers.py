@@ -78,8 +78,8 @@ class ChoiceField(serializers.ChoiceField):
             return ''
 
         for key, val in self._choices.items():
-            if val == data:
-                return key
+            if key == data:
+                return [key, val]
         self.fail('invalid_choice', input=data)
 
 
@@ -102,11 +102,11 @@ class PaymentSerializer(serializers.Serializer):
     )
     description = serializers.CharField(
         max_length=255, required=False)
-    platform = serializers.ChoiceField(choices=PAYMENT_CHOICES)
+    platform = ChoiceField(choices=PAYMENT_CHOICES)
     title = serializers.CharField(
         max_length=255, required=False)
     amount = serializers.DecimalField(max_digits=16, decimal_places=2)
-    currency = ChoiceField(
+    currency = serializers.ChoiceField(
         choices=CURRENCY_CHOICES, default='NGN')
     logo = serializers.URLField(required=False)
 

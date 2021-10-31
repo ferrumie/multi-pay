@@ -96,16 +96,16 @@ class PaymentView(APIView):
         ser = self.serializer_class(data=data)
         if ser.is_valid():
             amount = ser.validated_data.get('amount')
-            platform = ser.validated_data.get('platform').value
+            platform = ser.validated_data.get('platform')
+            print(platform[0])
             description = ser.validated_data.get('description')
             logo = ser.validated_data.get('logo')
             currency = ser.validated_data.get('currency')
             title = ser.validated_data.get('title')
-            print(platform)
 
             try:
                 user_api_key = UserApiKey.objects.filter(
-                    user=user).get(platform=platform)
+                    user=user).get(platform=platform[0])
             except UserApiKey.DoesNotExist:
                 return Response({'message': 'You dont have an apikey for this platform'})
             api_key = user_api_key.api_key
@@ -114,7 +114,7 @@ class PaymentView(APIView):
                 res = PaymentProcessor().pay(
                     api_key=api_key,
                     user=user,
-                    method=platform,
+                    method=platform[1],
                     tx_ref=reference,
                     amount=amount,
                     redirect_url=get_redirect_path(),
