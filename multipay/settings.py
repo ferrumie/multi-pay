@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # custom apps
     'user',
     'api',
+    'transaction',
 
     # third party
     'rest_framework',
