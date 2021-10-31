@@ -35,17 +35,17 @@ class UserApiKey(models.Model):
     """Model for adding api key for different payment platforms"""
 
     PAYMENT_CHOICES = (
-        ('PAYPAL', 'user'),
-        ('PAYSTACK', 'admin'),
-        ('STRIPE', 'owner'),
-        ('FLUTTERWAVE', 'staff'),
+        ('PAYPAL', 'paypal'),
+        ('PAYSTACK', 'paystack'),
+        ('STRIPE', 'stripe'),
+        ('FLUTTERWAVE', 'rave_payment'),
         ('CRYPTO', 'crypto')
 
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     api_key = models.CharField(
-        _('Verified'), max_length=255, unique=True)
+        _('Api Key'), max_length=255)
     platform = models.CharField(
         _('Payment Platform'), max_length=15,
         choices=PAYMENT_CHOICES)
