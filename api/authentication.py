@@ -16,6 +16,6 @@ class CustomAuthToken(ObtainAuthToken):
             'token': token.key,
             'user_id': user.pk,
             'email': user.email,
-            'phone_number': user.phone_number
+            'phone_number': str(user.phone_number)
         }
         return Response(response, status=status.HTTP_200_OK)

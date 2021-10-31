@@ -2,7 +2,7 @@ from django.urls import path
 from api.authentication import CustomAuthToken
 
 from api.views import (
-    ApiKeyDetail, ApiKeyView,
+    ApiKeyDetail, ApiKeyView, PaymentView,
     RegisterUserView, TransactionList)
 
 
@@ -18,6 +18,9 @@ urlpatterns = [
     path('user/apikeys/', ApiKeyView.as_view(), name='apikeys'),
     path('user/apikeys/<int:key_id>/',
          ApiKeyDetail.as_view(), name='apikey-detail'),
+
+    # Payment
+    path('payment/', PaymentView.as_view(), name='payment')
 
 
 ]
