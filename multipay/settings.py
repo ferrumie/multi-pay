@@ -103,7 +103,7 @@ DATABASES = {
 }
 
 ACTIVE_PAYMENT_PLATFORMS = {
-    'rave_payment': 'rave_payment',
+    'rave_payment': 'RavePayment',
     'paypal': 'PAYPAL'
 }
 

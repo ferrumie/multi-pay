@@ -10,11 +10,11 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from api.permissions import IsOwner
+from api.processor import PaymentProcessor
 from api.serializers import ApiKeySerializer, PaymentSerializer, RegisterUserSerializer, TransactionSerializer
 from api.utils.redirect import get_redirect_path
 from transaction.models import Transaction
 from user.models import UserApiKey
-from api.payment import PaymentProcessor
 
 
 User = get_user_model()
@@ -97,7 +97,6 @@ class PaymentView(APIView):
         if ser.is_valid():
             amount = ser.validated_data.get('amount')
             platform = ser.validated_data.get('platform')
-            print(platform[0])
             description = ser.validated_data.get('description')
             logo = ser.validated_data.get('logo')
             currency = ser.validated_data.get('currency')

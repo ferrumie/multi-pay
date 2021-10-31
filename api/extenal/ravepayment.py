@@ -1,6 +1,6 @@
 import os
 
-from api.payment import PaymentInterface, PaymentMethodFactory
+from api.payment import PaymentInterface
 from api.request import Request
 
 
@@ -68,7 +68,3 @@ class RavePayment(Request, PaymentInterface):
             raise ValueError({"message": "Transaction id is required"})
         except Exception as e:
             raise Exception(str(e))
-
-
-payment_methods = PaymentMethodFactory()
-payment_methods.register_payment_method('rave_payment', RavePayment)
