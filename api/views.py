@@ -94,7 +94,7 @@ class PaymentView(APIView):
         data = request.data
         # load the serializer
         ser = self.serializer_class(data=data)
-        if ser.is_valid:
+        if ser.is_valid():
             amount = ser.validated_data.get('amount')
             platform = ser.validated_data.get('title')
             description = ser.validated_data.get('description')
