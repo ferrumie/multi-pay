@@ -155,7 +155,8 @@ class PaymentConfirmationView(APIView):
             res = PaymentProcessor().verify(
                 transaction_id=transaction_id,
                 method=platform[1], user=user, api_key=api_key)
-            if res:
-                return Response({'message': 'Payment'}, status=status.HTTP_200_OK)
+            if res['status'] == 'success':
+                
+                return Response({'message': res['message']}, status=status.HTTP_200_OK)
         else:
             return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)

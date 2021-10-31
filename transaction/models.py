@@ -8,9 +8,19 @@ class Transaction(models.Model):
         _("Plan Amount"), decimal_places=2, max_digits=12,
         blank=True, null=True)
 
-    api_key = models.CharField(
-        _('Verified'), max_length=255, unique=True)
-
     platform = models.CharField(
         _('Payment Platform'), max_length=150)
+
     user = models.ForeignKey('user.User', on_delete=models.CASCADE)
+
+    success = models.BooleanField(blank=True, null=True)
+
+    payment_type = models.CharField(
+        _('Payment Type'), max_length=50, blank=True
+    )
+
+    account_id = models.CharField(max_length=50, blank=True)
+
+    tranaction_id = models.CharField(max_length=50, blank=True)
+
+    transaction_ref = models.CharField(max_length=250, blank=True)

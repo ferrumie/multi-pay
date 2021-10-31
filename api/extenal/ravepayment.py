@@ -1,4 +1,5 @@
 import os
+from api.exceptions import FlutterException
 
 from api.payment import PaymentInterface
 from api.request import Request
@@ -19,7 +20,7 @@ class RavePayment(Request, PaymentInterface):
         redirect_url = payload.get("redirect_url")
         currency = payload.get('currency')
         api_key = payload.get('api_key')
-        print(tx_ref)
+        print(redirect_url)
         payload = {
             "user_id": user.id,
             "tx_ref": tx_ref,
@@ -46,7 +47,6 @@ class RavePayment(Request, PaymentInterface):
         self.data = payload
         response = dict()
         response = super(RavePayment, self).send()
-        print(response)
         # Extracting Transaction id from the link
         link = response['data']['link']
         link_list = link.split('/')
@@ -70,10 +70,9 @@ class RavePayment(Request, PaymentInterface):
         try:
             if transaction_id:
                 response = super(RavePayment, self).send()
-                if (response.get('status') == 'success') and \
-                        (response['data'].get('tx_ref') == tx_ref):
+                if (response.get('status') == 'success'):
                     return response
                 return {'message': False}
             raise ValueError({"message": "Transaction id is required"})
         except Exception as e:
-            raise Exception(str(e))
+            raise FlutterException(str(e))
