@@ -118,6 +118,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+UI_DOMAIN = os.getenv('UI_DOMAIN', 'http://localhost:8000')
+UI_ROUTE = 'payment/confirm'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

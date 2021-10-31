@@ -10,9 +10,10 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from api.permissions import IsOwner
-from api.serializers import ApiKeySerializer, RegisterUserSerializer, TransactionSerializer
+from api.serializers import ApiKeySerializer, PaymentSerializer, RegisterUserSerializer, TransactionSerializer
 from transaction.models import Transaction
 from user.models import UserApiKey
+from api.payment import PaymentProcessor
 
 
 User = get_user_model()
@@ -77,9 +78,10 @@ class ApiKeyDetail(RetrieveUpdateDestroyAPIView):
 
 class PaymentView(APIView):
     """
-    Payment View 
+    Payment View
     """
     permission_classes = (IsAuthenticated,)
+    serializer_class = PaymentSerializer
 
     def post(self, request, *args, **kwargs):
         """
@@ -88,35 +90,37 @@ class PaymentView(APIView):
         # Setup needed request Data
         user = request.user
         reference = str(uuid.uuid4())
-        platform = self.request.data.get('platform')
-        self
-        try:
-            user_api_key = UserApiKey.objects.get(platform=platform)
-            api_key = user_api_key.api_key
-        except UserApiKey.DoesNotExist:
-            return Response({'message': 'Please Provide a Supported Payment Platform'})
-            
-        gotahia_plan_id = request.data.get('plan_id')
-        if gotahia_plan_id:
-            try:
+        data = request.data
+        # load the serializer
+        ser = self.serializer_class(data=data)
+        if ser.is_valid:
+            amount = ser.validated_data.get('amount')
+            platform = ser.validated_data.get('title')
+            description = ser.validated_data.get('description')
+            logo = ser.validated_data.get('logo')
+            currency = ser.validated_data.get('currency')
+            title = ser.validated_data.get('title')
 
-                amount = str(gotahia_plan.amount)
-                res = PaymentProcessor().pay(
-                    user=user,
-                    method=source_type,
-                    tx_ref=reference,
-                    amount=amount,
-                    plan_id=gotahia_plan_id,
-                    redirect_url=get_redirect_path('seller_payment'),
-                    title=settings.PAYMENT_TITLE.get("seller_title"),
-                    description=settings.DESCRIPTION.get("seller_description"))
-                return Response(res, status=status.HTTP_200_OK)
-            except SellerPlan.DoesNotExist:
-                return Response({'message': 'Plan does not exist'},
-                                status=status.HTTP_400_BAD_REQUEST)
-            except Exception:
-                return Response({'message': 'An error occured'},
-                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        else:
-            return Response({'message': 'Please provide a plan id'},
-                            status=status.HTTP_400_BAD_REQUEST)
+        try:
+            user_api_key = UserApiKey.objects.filter(
+                user=user).get(platform=platform)
+        except UserApiKey.DoesNotExist:
+            return Response({'message': 'You dont have an apikey for this platform'})
+        api_key = user_api_key.api_key
+        try:
+
+            res = PaymentProcessor().pay(
+                api_key=api_key,
+                user=user,
+                method=platform,
+                tx_ref=reference,
+                amount=amount,
+                redirect_url=get_redirect_path('seller_payment'),
+                title=title,
+                logo=logo,
+                currency=currency,
+                description=description)
+            return Response(res, status=status.HTTP_200_OK)
+        except KeyboardInterrupt:
+            return Response({'message': 'An error occured'},
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)

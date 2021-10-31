@@ -71,7 +71,7 @@ class PaymentSerializer(serializers.Serializer):
         ('PAYPAL', 'paypal'),
         ('PAYSTACK', 'paystack'),
         ('STRIPE', 'stripe'),
-        ('FLUTTERWAVE', 'rave_payment'),
+        ('rave_payment', 'rave_payment'),
         ('CRYPTO', 'crypto')
 
     )
