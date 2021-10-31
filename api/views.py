@@ -1,7 +1,9 @@
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView
+from rest_framework.generics import (
+    CreateAPIView, ListAPIView,
+    ListCreateAPIView, RetrieveUpdateDestroyAPIView)
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
@@ -49,6 +51,16 @@ class TransactionList(ListAPIView):
         user = self.request.user
         queryset = Transaction.objects.filter(user=user)
         return queryset
+
+
+class ApiKeyDetail(RetrieveUpdateDestroyAPIView):
+    """
+    Retrieve, Update or delete an API Key
+    """
+    permission_classes = (IsAuthenticated,)
+    queryset = UserApiKey.objects.all()
+    serializer_class = ApiKeySerializer
+    lookup_url_kwarg = 'key_id'
 
 
 class PaymentView(APIView):
