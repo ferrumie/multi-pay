@@ -1,3 +1,4 @@
+import uuid
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status
@@ -84,14 +85,17 @@ class PaymentView(APIView):
         """
         Receives payload to send payment request
         """
+        # Setup needed request Data
         user = request.user
         reference = str(uuid.uuid4())
         platform = self.request.data.get('platform')
+        self
         try:
             user_api_key = UserApiKey.objects.get(platform=platform)
             api_key = user_api_key.api_key
         except UserApiKey.DoesNotExist:
             return Response({'message': 'Please Provide a Supported Payment Platform'})
+            
         gotahia_plan_id = request.data.get('plan_id')
         if gotahia_plan_id:
             try:

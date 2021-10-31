@@ -1,3 +1,4 @@
+from re import match
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
@@ -63,3 +64,31 @@ class ApiKeySerializer(serializers.ModelSerializer):
     class Meta:
         model = UserApiKey
         fields = '__all__'
+
+
+class PaymentSerializer(serializers.Serializer):
+    PAYMENT_CHOICES = (
+        ('PAYPAL', 'paypal'),
+        ('PAYSTACK', 'paystack'),
+        ('STRIPE', 'stripe'),
+        ('FLUTTERWAVE', 'rave_payment'),
+        ('CRYPTO', 'crypto')
+
+    )
+    CURRENCY_CHOICES = (
+        ('NGN', 'ngn'),
+        ('USD', 'usd'),
+        ('EUR', 'eur'),
+        ('CAD', 'cad'),
+        ('BTC', 'btc')
+
+    )
+    description = serializers.CharField(
+        max_length=255, required=False)
+    platform = serializers.ChoiceField(choices=PAYMENT_CHOICES)
+    title = serializers.CharField(
+        max_length=255, required=False)
+    amount = serializers.DecimalField(max_digits=16, decimal_places=2)
+    currency = serializers.CharField(
+        max_length=4, choices=CURRENCY_CHOICES, default='NGN')
+    logo = serializers.URLField(required=False)
