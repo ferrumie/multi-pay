@@ -1,13 +1,14 @@
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status
-from rest_framework.generics import CreateAPIView, ListAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from api.serializers import AddApiKeySerializer, RegisterUserSerializer, TransactionSerializer
 from transaction.models import Transaction
+from user.models import UserApiKey
 
 
 User = get_user_model()
@@ -25,17 +26,19 @@ class RegisterUserView(CreateAPIView):
         return Response(response.data, status=status.HTTP_201_CREATED)
 
 
-class AddApiKeyView(CreateAPIView):
+class AddApiKeyView(ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = AddApiKeySerializer
     permission_classes = (IsAuthenticated,)
 
-    def create(self, request, *args, **kwargs):
-        response = super().create(request, *args, **kwargs)
-        token, created = Token.objects.get_or_create(
-            user_id=response.data["id"])
-        response.data['token'] = str(token)
-        return Response(response.data, status=status.HTTP_201_CREATED)
+    def get_queryset(self):
+        user = self.request.user
+        queryset = UserApiKey.objects.filter(user=user)
+        return queryset
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        serializer.save(user=user)
 
 
 class TransactionList(ListAPIView):
