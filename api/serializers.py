@@ -65,12 +65,30 @@ class ApiKeySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ChoiceField(serializers.ChoiceField):
+
+    def to_representation(self, obj):
+        if obj == '' and self.allow_blank:
+            return obj
+        return self._choices[obj]
+
+    def to_internal_value(self, data):
+        # To support inserts with the value
+        if data == '' and self.allow_blank:
+            return ''
+
+        for key, val in self._choices.items():
+            if val == data:
+                return key
+        self.fail('invalid_choice', input=data)
+
+
 class PaymentSerializer(serializers.Serializer):
     PAYMENT_CHOICES = (
         ('PAYPAL', 'paypal'),
         ('PAYSTACK', 'paystack'),
         ('STRIPE', 'stripe'),
-        ('rave_payment', 'rave_payment'),
+        ('FLUTTERWAVE', 'rave_payment'),
         ('CRYPTO', 'crypto')
 
     )
@@ -88,7 +106,7 @@ class PaymentSerializer(serializers.Serializer):
     title = serializers.CharField(
         max_length=255, required=False)
     amount = serializers.DecimalField(max_digits=16, decimal_places=2)
-    currency = serializers.ChoiceField(
+    currency = ChoiceField(
         choices=CURRENCY_CHOICES, default='NGN')
     logo = serializers.URLField(required=False)
 

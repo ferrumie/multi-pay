@@ -38,6 +38,7 @@ class PaymentProcessor:
     def pay(cls, method, **kwargs):
         payment_method = payment_methods.select_payment_method(method)
         payload = kwargs
+        print(payment_method, payload)
         return payment_method.pay(payload)
 
     @classmethod

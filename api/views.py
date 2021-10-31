@@ -96,32 +96,35 @@ class PaymentView(APIView):
         ser = self.serializer_class(data=data)
         if ser.is_valid():
             amount = ser.validated_data.get('amount')
-            platform = ser.validated_data.get('title')
+            platform = ser.validated_data.get('platform').value
             description = ser.validated_data.get('description')
             logo = ser.validated_data.get('logo')
             currency = ser.validated_data.get('currency')
             title = ser.validated_data.get('title')
+            print(platform)
 
-        try:
-            user_api_key = UserApiKey.objects.filter(
-                user=user).get(platform=platform)
-        except UserApiKey.DoesNotExist:
-            return Response({'message': 'You dont have an apikey for this platform'})
-        api_key = user_api_key.api_key
-        try:
+            try:
+                user_api_key = UserApiKey.objects.filter(
+                    user=user).get(platform=platform)
+            except UserApiKey.DoesNotExist:
+                return Response({'message': 'You dont have an apikey for this platform'})
+            api_key = user_api_key.api_key
+            try:
 
-            res = PaymentProcessor().pay(
-                api_key=api_key,
-                user=user,
-                method=platform,
-                tx_ref=reference,
-                amount=amount,
-                redirect_url=get_redirect_path(),
-                title=title,
-                logo=logo,
-                currency=currency,
-                description=description)
-            return Response(res, status=status.HTTP_200_OK)
-        except KeyboardInterrupt:
-            return Response({'message': 'An error occured'},
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                res = PaymentProcessor().pay(
+                    api_key=api_key,
+                    user=user,
+                    method=platform,
+                    tx_ref=reference,
+                    amount=amount,
+                    redirect_url=get_redirect_path(),
+                    title=title,
+                    logo=logo,
+                    currency=currency,
+                    description=description)
+                return Response(res, status=status.HTTP_200_OK)
+            except KeyboardInterrupt:
+                return Response({'message': 'An error occured'},
+                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
