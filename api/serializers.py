@@ -89,6 +89,6 @@ class PaymentSerializer(serializers.Serializer):
     title = serializers.CharField(
         max_length=255, required=False)
     amount = serializers.DecimalField(max_digits=16, decimal_places=2)
-    currency = serializers.CharField(
-        max_length=4, choices=CURRENCY_CHOICES, default='NGN')
+    currency = serializers.ChoiceField(
+        choices=CURRENCY_CHOICES, default='NGN')
     logo = serializers.URLField(required=False)
