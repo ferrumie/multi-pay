@@ -42,6 +42,16 @@ class ApiKeyView(ListCreateAPIView):
         user = self.request.user
         serializer.save(user=user)
 
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        platform = request.data.get('platform')
+        key = UserApiKey.objects.filter(user=user).filter(platform=platform)
+        if key:
+            return Response(
+                {'message': 'You have already Added a Key for This platform'},
+                status=status.HTTP_400_BAD_REQUEST)
+        return super().post(request, *args, **kwargs)
+
 
 class TransactionList(ListAPIView):
     authentication_classes = [TokenAuthentication]
