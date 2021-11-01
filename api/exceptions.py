@@ -16,3 +16,8 @@ class UnauthorizedApiKey(APIException):
 class FlutterException(APIException):
     status_code = 400
     default_detail = 'Error Returned from Rave api'
+
+
+class PaystackException(APIException):
+    status_code = 400
+    default_detail = 'Error Returned from PaystackAPI'
