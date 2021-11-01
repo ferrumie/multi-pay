@@ -1,9 +1,11 @@
+from api.extenal.paystack import PayStackPayment
 from api.extenal.ravepayment import RavePayment
 from api.payment import PaymentMethodFactory
 
 
 payment_methods = PaymentMethodFactory()
 payment_methods.register_payment_method('rave_payment', RavePayment)
+payment_methods.register_payment_method('paystack', PayStackPayment)
 
 
 class PaymentProcessor:

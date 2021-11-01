@@ -54,7 +54,7 @@ class PayStackPayment(Request, PaymentInterface):
         transaction_id = payload.get("transaction_id")
         method = payload.get("method")
         self.method = 'get'
-        self.api = f'transactions/{transaction_id}/verify'
+        self.api = f'transaction/verify/:{transaction_id}'
         self.headers['Authorization'] = f'Bearer {api_key}'
         response = dict()
         try:
