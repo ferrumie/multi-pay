@@ -104,7 +104,8 @@ DATABASES = {
 
 ACTIVE_PAYMENT_PLATFORMS = {
     'rave_payment': 'RavePayment',
-    'paypal': 'PAYPAL'
+    'paystack': 'PaystackPayment',
+    'stripe': 'StripePayment',
 }
 
 # Password validation
