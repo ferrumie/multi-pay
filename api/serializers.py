@@ -60,6 +60,8 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 
 class ApiKeySerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = UserApiKey
         fields = '__all__'

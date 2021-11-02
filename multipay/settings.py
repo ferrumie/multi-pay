@@ -127,7 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 UI_DOMAIN = os.getenv('UI_DOMAIN', 'http://localhost:8000/')
-UI_ROUTE = 'payment/confirm'
+UI_ROUTE = 'api/payment/confirm'
 
 
 # Internationalization

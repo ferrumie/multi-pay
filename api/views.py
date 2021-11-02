@@ -124,7 +124,7 @@ class PaymentView(APIView):
                     description=description)
                 response = Response(res, status=status.HTTP_200_OK)
                 response.set_cookie(
-                    'platform', ["FLUTTERWAVE", "rave_payment"])
+                    'platform', [platform[0], platform[1]])
                 return response
             except KeyboardInterrupt:
                 return Response({'message': 'An error occured'},

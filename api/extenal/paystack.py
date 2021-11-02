@@ -15,13 +15,15 @@ class PayStackPayment(Request, PaymentInterface):
         user = payload.get("user")
         tx_ref = payload.get("tx_ref")
         amount = payload.get("amount")
+        # For paystack, amount must be an integer, convert the amount to an integer
+        amount = int(round(amount))
         redirect_url = payload.get("redirect_url")
         currency = payload.get('currency')
         api_key = payload.get('api_key')
         payload = {
             "user_id": user.id,
             "reference": tx_ref,
-            "amount": str(amount),
+            "amount": amount,
             "currency": currency,
             "meta": {
                 "user_id": user.id
@@ -34,13 +36,13 @@ class PayStackPayment(Request, PaymentInterface):
             }
         }
         self.method = 'post'
-        self.api = 'payments'
+        self.api = 'initialize'
         self.headers['Authorization'] = f'Bearer {api_key}'
         self.data = payload
         response = dict()
         response = super(PayStackPayment, self).send()
         link = response['data']['authorization_url']
-        reference = response['data']['authorization_url']
+        reference = response['data']['reference']
         res = {
             "link": link,
             "message": response['message'],
@@ -54,7 +56,7 @@ class PayStackPayment(Request, PaymentInterface):
         transaction_id = payload.get("transaction_id")
         method = payload.get("method")
         self.method = 'get'
-        self.api = f'transaction/verify/:{transaction_id}'
+        self.api = f'verify/:{transaction_id}'
         self.headers['Authorization'] = f'Bearer {api_key}'
         response = dict()
         try:
