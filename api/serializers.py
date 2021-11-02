@@ -91,7 +91,7 @@ class PaymentSerializer(serializers.Serializer):
         ('PAYSTACK', 'paystack'),
         ('STRIPE', 'stripe'),
         ('FLUTTERWAVE', 'rave_payment'),
-        ('CRYPTO', 'crypto')
+        ('COINBASE', 'coinbase')
 
     )
     CURRENCY_CHOICES = (

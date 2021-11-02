@@ -106,6 +106,7 @@ ACTIVE_PAYMENT_PLATFORMS = {
     'rave_payment': 'RavePayment',
     'paystack': 'PaystackPayment',
     'stripe': 'StripePayment',
+    'coinbase': 'CoinBasePayment'
 }
 
 # Password validation

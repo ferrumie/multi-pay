@@ -39,7 +39,7 @@ class UserApiKey(models.Model):
         ('PAYSTACK', 'paystack'),
         ('STRIPE', 'stripe'),
         ('FLUTTERWAVE', 'rave_payment'),
-        ('CRYPTO', 'crypto')
+        ('COINBASE', 'coinbase')
 
     )
 
