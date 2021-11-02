@@ -56,7 +56,7 @@ class PayStackPayment(Request, PaymentInterface):
         transaction_id = payload.get("transaction_id")
         method = payload.get("method")
         self.method = 'get'
-        self.api = f'verify/:{transaction_id}'
+        self.api = f'verify/{transaction_id}'
         self.headers['Authorization'] = f'Bearer {api_key}'
         response = dict()
         try:
@@ -72,7 +72,7 @@ class PayStackPayment(Request, PaymentInterface):
                         'platform': method,
                         'user': user,
                         'status': response['status'],
-                        'payment_type': response['authorization']['card_type']
+                        'payment_type': response['data']['authorization']['card_type']
                     }
                     transact = Transaction.objects.create(**transaction)
                     transact.save()
