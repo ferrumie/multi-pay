@@ -42,14 +42,12 @@ class CoinBasePayment(Request, PaymentInterface):
         self.data = payload
         response = dict()
         response = super(CoinBasePayment, self).send()
-        # Extracting Transaction id from the link
-        link = response['data']['link']
-        link_list = link.split('/')
-        transaction_id = link_list[-1]
         res = {
-            "link": response['data']['link'],
+            "hosted_url": response['data']['hosted_url'],
             "status": response['status'],
-            "transaction_id": transaction_id
+            "code": response['data']['code'],
+            "created_at": response['data']['created_at'],
+            "expires_at": response['data']['expires_at']
         }
         return res
 
