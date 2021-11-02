@@ -1,4 +1,5 @@
 import os
+from api.exceptions import CoinBaseException
 
 from api.payment import PaymentInterface
 from api.request import Request
@@ -81,4 +82,4 @@ class CoinBasePayment(Request, PaymentInterface):
                 return response
             raise ValueError({"message": "Transaction id is required"})
         except Exception as e:
-            raise PaystackException(str(e))
+            raise CoinBaseException(str(e))

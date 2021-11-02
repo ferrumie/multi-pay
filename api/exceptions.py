@@ -20,4 +20,14 @@ class FlutterException(APIException):
 
 class PaystackException(APIException):
     status_code = 400
-    default_detail = 'Error Returned from PaystackAPI'
+    default_detail = 'Error Returned from Paystackapi'
+
+
+class CoinBaseException(APIException):
+    status_code = 400
+    default_detail = 'Error Returned from CoinBaseApi'
+
+
+class StripeException(APIException):
+    status_code = 400
+    default_detail = 'Error Returned from StripeApi'
