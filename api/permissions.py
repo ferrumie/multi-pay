@@ -16,6 +16,8 @@ class IsOwner(permissions.BasePermission):
 
 class IsIdempotent(permissions.BasePermission):
     message = 'Duplicate request detected.'
+    # TODO: make this work
+    # needed to ensure idempotency for the post requests
 
     def has_permission(self, request, view):
         if request.method != 'POST':

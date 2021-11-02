@@ -6,10 +6,10 @@ from api.request import Request
 from transaction.models import Transaction
 
 
-class CoinBasePayment(Request, PaymentInterface):
+class StripePayment(Request, PaymentInterface):
     def __init__(self):
-        url = os.getenv("COINBASE_API_URL")
-        super(CoinBasePayment, self).__init__(base=url)
+        url = os.getenv("STRIPE_API_URL")
+        super(StripePayment, self).__init__(base=url)
 
     def pay(self, payload):
         user = payload.get("user")
@@ -42,7 +42,7 @@ class CoinBasePayment(Request, PaymentInterface):
         self.headers['Authorization'] = f'Bearer {api_key}'
         self.data = payload
         response = dict()
-        response = super(CoinBasePayment, self).send()
+        response = super(StripePayment, self).send()
         res = {
             "hosted_url": response['data']['hosted_url'],
             "status": response['status'],
@@ -63,7 +63,7 @@ class CoinBasePayment(Request, PaymentInterface):
         response = dict()
         try:
             if transaction_id:
-                response = super(CoinBasePayment, self).send()
+                response = super(StripePayment, self).send()
                 tran = Transaction.objects.filter(
                     user=user).filter(transaction_id=transaction_id)
                 if not tran:

@@ -1,6 +1,7 @@
 from api.extenal.coinbase import CoinBasePayment
 from api.extenal.paystack import PayStackPayment
 from api.extenal.ravepayment import RavePayment
+from api.extenal.sripe import StripePayment
 from api.payment import PaymentMethodFactory
 
 
@@ -8,6 +9,7 @@ payment_methods = PaymentMethodFactory()
 payment_methods.register_payment_method('rave_payment', RavePayment)
 payment_methods.register_payment_method('paystack', PayStackPayment)
 payment_methods.register_payment_method('paystack', CoinBasePayment)
+payment_methods.register_payment_method('paystack', StripePayment)
 
 
 class PaymentProcessor:

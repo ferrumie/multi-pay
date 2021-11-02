@@ -1,5 +1,4 @@
 import uuid
-import json
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status
@@ -12,7 +11,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from api.permissions import IsOwner
 from api.processor import PaymentProcessor
-from api.serializers import ApiKeySerializer, PaymentConfirmSerializer, PaymentSerializer, RegisterUserSerializer, TransactionSerializer
+from api.serializers import ApiKeySerializer, PaymentSerializer, RegisterUserSerializer, TransactionSerializer
 from api.utils.redirect import get_redirect_path
 from transaction.models import Transaction
 from user.models import UserApiKey
