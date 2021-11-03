@@ -49,6 +49,7 @@ class Request(object):
             'delete': requests.delete
         }
         request_method = request_dict.get(self.method)
+        print(self.path)
         try:
             self.res = request_method(
                 self.path, headers=self.headers, 

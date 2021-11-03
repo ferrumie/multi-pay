@@ -27,10 +27,9 @@ class StripePayment(Request, PaymentInterface):
             "mode": "payment",
             "line_items": [
                 {
-                    "price": str(amount),
+                    "amount": str(amount),
                     "currency": currency,
                     "name": title,
-                    "logo": logo,
                     "description": description
                 }
             ],
@@ -43,7 +42,7 @@ class StripePayment(Request, PaymentInterface):
             },
         }
         self.method = 'post'
-        self.api = 'payments'
+        self.api = 'sessions'
         self.headers['Authorization'] = f'Bearer {api_key}'
         self.data = payload
         response = dict()
