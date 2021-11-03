@@ -8,8 +8,8 @@ from api.payment import PaymentMethodFactory
 payment_methods = PaymentMethodFactory()
 payment_methods.register_payment_method('rave_payment', RavePayment)
 payment_methods.register_payment_method('paystack', PayStackPayment)
-payment_methods.register_payment_method('paystack', CoinBasePayment)
-payment_methods.register_payment_method('paystack', StripePayment)
+payment_methods.register_payment_method('coinbase', CoinBasePayment)
+payment_methods.register_payment_method('stripe', StripePayment)
 
 
 class PaymentProcessor:

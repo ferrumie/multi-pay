@@ -10,6 +10,8 @@ class StripePayment(Request, PaymentInterface):
     def __init__(self):
         url = os.getenv("STRIPE_API_URL")
         super(StripePayment, self).__init__(base=url)
+        print(url)
+        self.headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
     def pay(self, payload):
         user = payload.get("user")
@@ -22,20 +24,23 @@ class StripePayment(Request, PaymentInterface):
         api_key = payload.get('api_key')
 
         payload = {
-            "pricing_type": "fixed_price",
-            "local_price": {
-                "amount": str(amount),
-                "currency": currency,
-            },
-            "redirect_url": redirect_url,
+            "mode": "payment",
+            "line_items": [
+                {
+                    "price": str(amount),
+                    "currency": currency,
+                    "name": title,
+                    "logo": logo,
+                    "description": description
+                }
+            ],
+            "payment_method_types": ["card"],
+            "success_url": redirect_url,
+            "cancel_url": 'api/',
             "metadata": {
                 "customer_name": f'{user.first_name} {user.last_name}',
                 "customer_id": user.id
             },
-            "name": title,
-            "logo": logo,
-            "description": description
-
         }
         self.method = 'post'
         self.api = 'payments'
