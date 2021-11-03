@@ -59,7 +59,7 @@ class Request(object):
             raise Exception(str(e))
 
         response = json.loads(self.res.content)
-        content = response['message']
+        content = (response.get('message'), response.get('error'))
         if self.res.status_code == 401:
             raise UnauthorizedApiKey(content)
         if not 200 <= self.res.status_code < 300:

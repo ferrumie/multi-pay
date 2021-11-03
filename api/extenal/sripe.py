@@ -43,6 +43,7 @@ class StripePayment(Request, PaymentInterface):
         self.data = payload
         response = dict()
         response = super(StripePayment, self).send()
+        breakpoint()
         res = {
             "hosted_url": response['data']['hosted_url'],
             "status": response['status'],
