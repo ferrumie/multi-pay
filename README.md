@@ -164,5 +164,3 @@ Check out the django documentation on [Testing](https://docs.djangoproject.com/e
         '234915':{'en': 'Glo'},
     ```
 
-# Oh and need i say?
-``` Your keys are safe with me```
