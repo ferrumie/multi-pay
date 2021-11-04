@@ -7,6 +7,7 @@ from api.serializers import MyAuthTokenSerializer
 
 
 class CustomAuthToken(ObtainAuthToken):
+    ''' Custom Auth token, to customize response and change default serializer'''
     serializer_class = MyAuthTokenSerializer
 
     def post(self, request, *args, **kwargs):

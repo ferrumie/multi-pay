@@ -8,10 +8,14 @@ import stripe
 
 
 class StripePayment(Request, PaymentInterface):
+    '''
+    Stripe payment method class
+    '''
     def __init__(self):
         url = os.getenv("STRIPE_API_URL")
         super(StripePayment, self).__init__(base=url)
-        print(url)
+
+        # Stripe does not accept application/json content-type
         self.headers['Content-Type'] = 'application/x-www-form-urlencoded'
 
     def pay(self, payload):
@@ -23,9 +27,14 @@ class StripePayment(Request, PaymentInterface):
         redirect_url = payload.get("redirect_url")
         currency = payload.get('currency')
         api_key = payload.get('api_key')
+
+        # stripe stores amount in lower currency (kobo, cent)
         amount = int(round(amount*100))
 
+        # set up stripe api_key 
         stripe.api_key = api_key
+
+        # create new session for payment
         response = stripe.checkout.Session.create(
             # Customer Email is optional,
             # It is not safe to accept email directly from the client side
@@ -65,6 +74,8 @@ class StripePayment(Request, PaymentInterface):
         stripe.api_key = api_key
         try:
             if transaction_id:
+                # retrieve session to confirm if it passed or failed.
+                # using the transaction id
                 response = stripe.checkout.Session.retrieve(transaction_id)
                 tran = Transaction.objects.filter(
                     user=user).filter(transaction_id=transaction_id)

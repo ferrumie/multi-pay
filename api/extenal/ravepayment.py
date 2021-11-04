@@ -7,6 +7,9 @@ from transaction.models import Transaction
 
 
 class RavePayment(Request, PaymentInterface):
+    '''
+    Extends the custom Request class
+    '''
     def __init__(self):
         url = os.getenv("FLUTTERWAVE_API_URL")
         super(RavePayment, self).__init__(base=url)
@@ -63,7 +66,6 @@ class RavePayment(Request, PaymentInterface):
         api_key = payload.get('api_key')
         transaction_id = payload.get("transaction_id")
         transaction_ref = payload.get("transaction_ref")
-        print(payload)
         method = payload.get("method")
         self.method = 'get'
         self.api = f'transactions/{transaction_id}/verify'

@@ -8,7 +8,7 @@ User = get_user_model()
 class BaseAPITestCase(APITestCase):
 
     """
-    base setup to create different test cases for cleaner code
+    Base setup to create different test cases for cleaner code
     """
     client = APIClient
 
