@@ -37,6 +37,12 @@ class PaymentTestCase(BaseAPITestCase):
         "amount": "120"
     }
 
+    paystack_verify_data_fail = {
+        "status": "failed",
+        "message": "Authorization URL Error",
+        "amount": "120"
+    }
+
     @patch('api.processor.PaymentProcessor.pay', return_value=paystack_mock_data)
     def test_make_payment_with_a_platform(self, mock_payment):
         ''' Make payment with a platform
@@ -68,4 +74,53 @@ class PaymentTestCase(BaseAPITestCase):
     @patch('api.processor.PaymentProcessor.pay', return_value=paystack_mock_data)
     @patch('api.processor.PaymentProcessor.verify', return_value=paystack_verify_data)
     def test_verify_payment_and_check_if_transaction_is_created(self, mock_payment, mock_verify):
-        pass
+        '''
+        Verify payment through our redirect url
+        '''
+
+        # Add a payment first
+        self.client.login(email='nobody@nobody.niks', password='nobody')
+        self.client.post(
+            reverse('apikeys'), self.create_api_key_data)
+        response = self.client.post(
+            reverse('payment'), self.create_payment_data)
+
+        # Now verify the payment
+        # Get the payment transaction id
+        verify_query_param = {
+            'tx_ref': 'woi2h3i9ne93',
+            'transaction_id': response.data['reference']
+        }
+        response = self.client.get(
+            reverse('payment-confirm'), data=verify_query_param)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            'success', response.data['status'])
+
+    @patch('api.processor.PaymentProcessor.pay', return_value=paystack_mock_data)
+    @patch('api.processor.PaymentProcessor.verify', return_value=paystack_verify_data_fail)
+    def test_verify_payment_when_failed(self, mock_payment, mock_verify):
+        '''
+        Verify payment through our redirect url
+        '''
+
+        # Add a payment first
+        self.client.login(email='nobody@nobody.niks', password='nobody')
+        self.client.post(
+            reverse('apikeys'), self.create_api_key_data)
+        response = self.client.post(
+            reverse('payment'), self.create_payment_data)
+
+        # Now verify the payment should fail
+        # Get the payment transaction id
+        verify_query_param = {
+            'tx_ref': 'woi2h3i9ne93',
+            'transaction_id': response.data['reference']
+        }
+        response = self.client.get(
+            reverse('payment-confirm'), data=verify_query_param)
+        self.assertTrue(mock_payment.is_called())
+        self.assertTrue(mock_verify.is_called())
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            'Authorization URL Error', response.data['message'])
