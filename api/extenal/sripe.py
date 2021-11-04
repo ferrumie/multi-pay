@@ -68,6 +68,11 @@ class StripePayment(Request, PaymentInterface):
                 response = stripe.checkout.Session.retrieve(transaction_id)
                 tran = Transaction.objects.filter(
                     user=user).filter(transaction_id=transaction_id)
+                payment_stat = response.payment_status
+                if payment_stat == 'paid':
+                    stats = 'success'
+                else:
+                    stats = 'failed'
                 if not tran:
                     transaction = {
                         'amount': response.amount_total,
@@ -75,14 +80,16 @@ class StripePayment(Request, PaymentInterface):
                         'transaction_ref': response.id,
                         'platform': method,
                         'user': user,
-                        'status': response.payment_status,
+                        'status': payment_stat,
                         'payment_type': response.payment_method_types[0]
                     }
-                    breakpoint()
                     transact = Transaction.objects.create(**transaction)
                     transact.save()
 
-                return response
+                return {
+                    'status': stats,
+                    'response': response
+                }
             raise ValueError({"message": "Transaction id is required"})
         except Exception as e:
             raise StripeException(str(e))
