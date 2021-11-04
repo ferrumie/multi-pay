@@ -59,3 +59,6 @@ class PaymentTestCase(BaseAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn(
             'You dont have an apikey for this platform', response.data['message'])
+
+    def test_verify_payment_and_check_if_transaction_is_created(self):
+        pass

@@ -118,26 +118,23 @@ class PaymentView(APIView):
             except UserApiKey.DoesNotExist:
                 return Response({'message': 'You dont have an apikey for this platform'}, status=status.HTTP_400_BAD_REQUEST)
             api_key = user_api_key.api_key
-            try:
 
-                res = PaymentProcessor().pay(
-                    api_key=api_key,
-                    user=user,
-                    method=platform[1],
-                    tx_ref=reference,
-                    amount=amount,
-                    redirect_url=get_redirect_path(),
-                    title=title,
-                    logo=logo,
-                    currency=currency,
-                    description=description)
-                response = Response(res, status=status.HTTP_200_OK)
-                response.set_cookie(
-                    'platform', [platform[0], platform[1]])
-                return response
-            except KeyboardInterrupt:
-                return Response({'message': 'An error occured'},
-                                status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            res = PaymentProcessor().pay(
+                api_key=api_key,
+                user=user,
+                method=platform[1],
+                tx_ref=reference,
+                amount=amount,
+                redirect_url=get_redirect_path(),
+                title=title,
+                logo=logo,
+                currency=currency,
+                description=description)
+            response = Response(res, status=status.HTTP_200_OK)
+            response.set_cookie(
+                'platform', [platform[0], platform[1]])
+            return response
+
         else:
             return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
