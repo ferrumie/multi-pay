@@ -91,11 +91,17 @@ class PaymentTestCase(BaseAPITestCase):
             'tx_ref': 'woi2h3i9ne93',
             'transaction_id': response.data['reference']
         }
+        response.set_cookie('platform', ['PAYSTACK', 'paystack'])
         response = self.client.get(
             reverse('payment-confirm'), data=verify_query_param)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             'success', response.data['status'])
+
+        # Check transaction List
+        response = self.client.get(
+            reverse('transaction-list'))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     @patch('api.processor.PaymentProcessor.pay', return_value=paystack_mock_data)
     @patch('api.processor.PaymentProcessor.verify', return_value=paystack_verify_data_fail)

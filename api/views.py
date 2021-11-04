@@ -67,7 +67,6 @@ class ApiKeyView(ListCreateAPIView):
 
 
 class TransactionList(ListAPIView):
-    authentication_classes = [TokenAuthentication]
     permission_classes = (IsAuthenticated,)
     serializer_class = TransactionSerializer
 
