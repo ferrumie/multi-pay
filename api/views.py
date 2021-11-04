@@ -116,7 +116,7 @@ class PaymentView(APIView):
                 user_api_key = UserApiKey.objects.filter(
                     user=user).get(platform=platform[0])
             except UserApiKey.DoesNotExist:
-                return Response({'message': 'You dont have an apikey for this platform'})
+                return Response({'message': 'You dont have an apikey for this platform'}, status=status.HTTP_400_BAD_REQUEST)
             api_key = user_api_key.api_key
             try:
 
