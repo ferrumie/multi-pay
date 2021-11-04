@@ -21,6 +21,16 @@ User = get_user_model()
 
 
 class RegisterUserView(CreateAPIView):
+    '''
+    POST: Create a user, api_key is generated for auth
+    req data:
+    {
+         email:e@e.com,
+         password: wdwk,
+         password2: wkj,
+         phone_number: +2348063133959
+    }
+    '''
     queryset = User.objects.all()
     serializer_class = RegisterUserSerializer
 
