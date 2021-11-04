@@ -15,6 +15,10 @@ class IsOwner(permissions.BasePermission):
 
 
 class IsIdempotent(permissions.BasePermission):
+    '''
+    Permission to ensure the idempotency of the post requests
+    Raise an error if duplicate request is detected
+    '''
     message = 'Duplicate request detected.'
     # TODO: make this work
     # needed to ensure idempotency for the post requests
