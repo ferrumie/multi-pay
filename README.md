@@ -1,4 +1,11 @@
-# multi-pay
+# Multi-Pay
+- Checkout examples
+- ![Screenshot from 2021-11-04 03-02-06](https://user-images.githubusercontent.com/57694834/140299391-f9d20684-75d6-4342-b3fe-8fea34be06f4.png)
+- ![Screenshot from 2021-11-03 09-21-39](https://user-images.githubusercontent.com/57694834/140299433-b90edcb6-1bfc-48c6-869b-19ccdf60c8df.png)
+- ![Screenshot from 2021-10-31 16-21-12](https://user-images.githubusercontent.com/57694834/140299470-3f97b043-0557-45df-86ba-ea3b9e1a8d03.png)
+
+
+
 
 Multipay is a Payment MicroService API that links to various payment platforms to give you various range of options with just a single token id!
 
