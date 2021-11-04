@@ -23,7 +23,7 @@ class PayStackPayment(Request, PaymentInterface):
         payload = {
             "user_id": user.id,
             "reference": tx_ref,
-            "amount": amount,
+            "amount": amount*100,
             "currency": currency,
             "meta": {
                 "user_id": user.id

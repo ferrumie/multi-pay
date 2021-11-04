@@ -31,6 +31,11 @@ class PaymentTestCase(BaseAPITestCase):
         "message": "Authorization URL created",
         "reference": "e7ca4da1-32e0-4f58-b9dd-45e28e8559f9"
     }
+    paystack_verify_data = {
+        "status": "success",
+        "message": "Authorization URL created",
+        "amount": "120"
+    }
 
     @patch('api.processor.PaymentProcessor.pay', return_value=paystack_mock_data)
     def test_make_payment_with_a_platform(self, mock_payment):
@@ -60,5 +65,7 @@ class PaymentTestCase(BaseAPITestCase):
         self.assertIn(
             'You dont have an apikey for this platform', response.data['message'])
 
-    def test_verify_payment_and_check_if_transaction_is_created(self):
+    @patch('api.processor.PaymentProcessor.pay', return_value=paystack_mock_data)
+    @patch('api.processor.PaymentProcessor.verify', return_value=paystack_verify_data)
+    def test_verify_payment_and_check_if_transaction_is_created(self, mock_payment, mock_verify):
         pass
