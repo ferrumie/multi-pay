@@ -33,12 +33,16 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if User.objects.filter(email=attrs["email"]).exists():
+            # if email exist raise error
             raise serializers.ValidationError(
                 "A user with this email allready exists")
+        
+        # Verify the password
         if attrs["password"] != attrs.pop("password2"):
             raise serializers.ValidationError("Passwords do not match")
 
         try:
+            # Validate password
             password_validation.validate_password(attrs["password"])
         except ValidationError as e:
             raise serializers.ValidationError(str(e))
@@ -68,6 +72,11 @@ class ApiKeySerializer(serializers.ModelSerializer):
 
 
 class ChoiceField(serializers.ChoiceField):
+    '''
+    Override the default ChoiceField, to make
+    it return a list of value and its property
+    instead of returning just the value
+    '''
 
     def to_representation(self, obj):
         if obj == '' and self.allow_blank:
@@ -127,6 +136,10 @@ class PaymentConfirmSerializer(serializers.Serializer):
 
 
 class MyAuthTokenSerializer(serializers.Serializer):
+    '''
+    Override the default auth serializer
+    to take in email and password to retrieve token instead of using username
+    '''
     email = serializers.EmailField(label=_("Email"))
     password = serializers.CharField(
         label=_("Password",),

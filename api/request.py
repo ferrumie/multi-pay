@@ -22,18 +22,21 @@ class Request(object):
         # set headers
         self.headers = dict()
 
+        # Set content-type for methods
         if self.method != 'delete':
             self.headers['Content-Type'] = 'application/json'
 
         # create a send function that takes in the request
 
     def send(self):
+        '''
+        Send Request method
+        '''
         # set up the path,
         if self.api:
             self.path = os.path.join(self.base, self.api)
         else:
             self.path = self.base
-        print(self.path)
 
         # set up data
         if self.data:
@@ -41,7 +44,7 @@ class Request(object):
 
         # Set up request method
         # Using a dictionary instead of if-else
-        # Uo make it less piled up and kind of mimic the switch case
+        # To make it less piled up and kind of mimic the switch case
         request_dict = {
             'get': requests.get,
             'put': requests.put,
@@ -51,15 +54,18 @@ class Request(object):
         }
         request_method = request_dict.get(self.method)
         try:
+            # send in the request
             self.res = request_method(
-                self.path, headers=self.headers, 
+                self.path, headers=self.headers,
                 data=self.data, timeout=60)
         except requests.ConnectionError as e:
             raise ServiceUnavailable(str(e))
         except Exception as e:
             raise Exception(str(e))
 
+        # convert the response to a json format
         response = json.loads(self.res.content)
+        # if message returns none, return error instead
         content = (response.get('message'), response.get('error'))
         if self.res.status_code == 401:
             raise UnauthorizedApiKey(content)

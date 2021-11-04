@@ -5,18 +5,20 @@ from rest_framework import status
 from rest_framework.generics import (
     CreateAPIView, ListAPIView,
     ListCreateAPIView, RetrieveUpdateDestroyAPIView)
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
 from api.permissions import IsOwner
 from api.processor import PaymentProcessor
-from api.serializers import ApiKeySerializer, PaymentSerializer, RegisterUserSerializer, TransactionSerializer
+from api.serializers import (
+    ApiKeySerializer, PaymentSerializer,
+    RegisterUserSerializer, TransactionSerializer)
 from api.utils.redirect import get_redirect_path
 from transaction.models import Transaction
 from user.models import UserApiKey
 
 
+# Get user model
 User = get_user_model()
 
 
@@ -36,6 +38,7 @@ class RegisterUserView(CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
+        # Create token and store in response
         token, created = Token.objects.get_or_create(
             user_id=response.data["id"])
         response.data['token'] = str(token)
@@ -52,6 +55,7 @@ class ApiKeyView(ListCreateAPIView):
         return queryset
 
     def perform_create(self, serializer):
+        ''' Assign user by default from request while creatingg APIKey'''
         user = self.request.user
         serializer.save(user=user)
 
@@ -61,6 +65,7 @@ class ApiKeyView(ListCreateAPIView):
         key = UserApiKey.objects.filter(user=user).filter(platform=platform)
         # TODO: encrypt API keys before storing in db to make it safer
 
+        # Check if an api key exist for the platform. for this logged in user
         if key:
             return Response(
                 {'message': 'You have already Added a Key for This platform'},
@@ -74,6 +79,8 @@ class TransactionList(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
+
+        # Only return transaction for the logged in user
         queryset = Transaction.objects.filter(user=user)
         return queryset
 
@@ -85,12 +92,24 @@ class ApiKeyDetail(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsOwner,)
     queryset = UserApiKey.objects.all()
     serializer_class = ApiKeySerializer
+
+    # set a custom lookup id
     lookup_url_kwarg = 'key_id'
 
 
 class PaymentView(APIView):
     """
     Payment View
+    This is where most of the calls take place
+    POST
+    request {
+        'amount': 'required',
+        'platform': required,
+        title: provisionally required
+    }
+    The authenticated user supplies a platform, the api_key is retrieved
+    then the payment processor takes in the params and transfer the request 
+    to the specific payment function.
     """
     permission_classes = (IsAuthenticated,)
     serializer_class = PaymentSerializer
@@ -116,10 +135,14 @@ class PaymentView(APIView):
             try:
                 user_api_key = UserApiKey.objects.filter(
                     user=user).get(platform=platform[0])
+            # if apikey for the specified platform does not exist
+            # return an error
             except UserApiKey.DoesNotExist:
                 return Response({'message': 'You dont have an apikey for this platform'}, status=status.HTTP_400_BAD_REQUEST)
+
             api_key = user_api_key.api_key
 
+            # Call the payment processor with payload
             res = PaymentProcessor().pay(
                 api_key=api_key,
                 user=user,
@@ -131,7 +154,11 @@ class PaymentView(APIView):
                 logo=logo,
                 currency=currency,
                 description=description)
-            response = Response(res, status=status.HTTP_200_OK)
+            response = Response(res, status=status.HTTP_200_OK)\
+
+            # set up cookie with platform list
+            # when redirect url is called, this cookie is checked
+            # to make the view call the correct function for the platform
             response.set_cookie(
                 'platform', [platform[0], platform[1]])
             return response
@@ -143,6 +170,7 @@ class PaymentView(APIView):
 class PaymentConfirmationView(APIView):
     """
     Confirms if the payment is successful
+    Redirect url view, for the platforms
     """
     permission_classes = (IsAuthenticated,)
 
@@ -154,7 +182,11 @@ class PaymentConfirmationView(APIView):
         user = request.user
         transaction_ref = request.GET.get('tx_ref')
         transaction_id = request.GET.get('transaction_id')
+
+        # Read the plaform from the cookie
         platform = request.COOKIES['platform']
+
+        # Convert the string to a list
         platform = eval(platform)
         method = platform[1]
         # Get the API key
