@@ -1,4 +1,6 @@
 from rest_framework.test import APITestCase, APIClient
+from django.urls import reverse
+from rest_framework import status
 
 
 class UserTestCase(APITestCase):
@@ -36,7 +38,10 @@ class UserTestCase(APITestCase):
     }
 
     def test_user_token_create(self):
-        pass
+        # Create user
+        response = self.client.post(reverse('register-user'), self.create_user)
+        breakpoint()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_validate_phone_number(self):
         pass

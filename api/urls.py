@@ -21,7 +21,8 @@ urlpatterns = [
 
     # Payment
     path('payment/', PaymentView.as_view(), name='payment'),
-    path('payment/confirm/', PaymentConfirmationView.as_view(), name='payment-confirm'),
+    path('payment/confirm/', PaymentConfirmationView.as_view(),
+         name='payment-confirm'),
 
 
 ]
