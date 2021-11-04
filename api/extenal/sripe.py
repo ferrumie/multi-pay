@@ -63,10 +63,9 @@ class StripePayment(Request, PaymentInterface):
         transaction_id = payload.get("transaction_id")
         method = payload.get("method")
         stripe.api_key = api_key
-        response = stripe.checkout.Session.retrieve(transaction_id)
         try:
             if transaction_id:
-                response = super(StripePayment, self).send()
+                response = stripe.checkout.Session.retrieve(transaction_id)
                 tran = Transaction.objects.filter(
                     user=user).filter(transaction_id=transaction_id)
                 if not tran:
@@ -77,7 +76,7 @@ class StripePayment(Request, PaymentInterface):
                         'platform': method,
                         'user': user,
                         'status': response.payment_status,
-                        'payment_type': response.method
+                        'payment_type': response.payment_method_types[0]
                     }
                     transact = Transaction.objects.create(**transaction)
                     transact.save()
