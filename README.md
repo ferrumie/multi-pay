@@ -62,7 +62,7 @@ etc...
 -   Make a copy of the .env.sample file in the app folder and rename it to .env and update the variables accordingly:
 
     ```
-    DJANGO_KEY=generate a random django key # https://www.miniwebtool.com/django-secret-key-generator/
+    SECRET_KEY=generate a random django key # https://www.miniwebtool.com/django-secret-key-generator/
     DB_NAME=dbname
     DB_USER=dbuser
     DB_PASSWORD=secretpassword
