@@ -39,9 +39,10 @@ class UserTestCase(APITestCase):
 
     def test_user_token_create(self):
         # Create user
-        response = self.client.post(reverse('register-user'), self.create_user)
-        breakpoint()
+        response = self.client.post(
+            reverse('register-user'), self.register_user_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIn('token', response.data)
 
     def test_validate_phone_number(self):
         pass
