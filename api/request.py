@@ -33,6 +33,7 @@ class Request(object):
             self.path = os.path.join(self.base, self.api)
         else:
             self.path = self.base
+        print(self.path)
 
         # set up data
         if self.data:
@@ -49,7 +50,6 @@ class Request(object):
             'delete': requests.delete
         }
         request_method = request_dict.get(self.method)
-        print(self.path)
         try:
             self.res = request_method(
                 self.path, headers=self.headers, 

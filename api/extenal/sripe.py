@@ -4,6 +4,7 @@ from api.exceptions import StripeException
 from api.payment import PaymentInterface
 from api.request import Request
 from transaction.models import Transaction
+import stripe
 
 
 class StripePayment(Request, PaymentInterface):
@@ -22,38 +23,37 @@ class StripePayment(Request, PaymentInterface):
         redirect_url = payload.get("redirect_url")
         currency = payload.get('currency')
         api_key = payload.get('api_key')
+        amount = int(round(amount*100))
 
-        payload = {
-            "mode": "payment",
-            "line_items": [
+        stripe.api_key = api_key
+        response = stripe.checkout.Session.create(
+            # Customer Email is optional,
+            # It is not safe to accept email directly from the client side
+            customer_email=user.email,
+            payment_method_types=['card'],
+            line_items=[
                 {
-                    "amount": str(amount),
-                    "currency": currency,
-                    "name": title,
-                    "description": description
+                    'price_data': {
+                        'product_data': {
+                            'name': title,
+                            'logo': logo,
+                            'description': description
+                        },
+                        'currency': currency,
+                        'unit_amount': str(amount),
+                    },
+                    'quantity': 1,
                 }
             ],
-            "payment_method_types": ["card"],
-            "success_url": redirect_url,
-            "cancel_url": 'api/',
-            "metadata": {
-                "customer_name": f'{user.first_name} {user.last_name}',
-                "customer_id": user.id
-            },
-        }
-        self.method = 'post'
-        self.api = 'sessions'
-        self.headers['Authorization'] = f'Bearer {api_key}'
-        self.data = payload
-        response = dict()
-        response = super(StripePayment, self).send()
-        breakpoint()
+            mode='payment',
+            success_url=redirect_url,
+            cancel_url=f'{redirect_url}/cancel',
+        )
+
         res = {
-            "hosted_url": response['data']['hosted_url'],
-            "status": response['status'],
-            "code": response['data']['code'],
-            "created_at": response['data']['created_at'],
-            "expires_at": response['data']['expires_at']
+            "hosted_url": response.url,
+            "code": response.id,
+            "expires_at": response.expires_at
         }
         return res
 
@@ -62,10 +62,8 @@ class StripePayment(Request, PaymentInterface):
         api_key = payload.get('api_key')
         transaction_id = payload.get("transaction_id")
         method = payload.get("method")
-        self.method = 'get'
-        self.api = f'{transaction_id}'
-        self.headers['Authorization'] = f'Bearer {api_key}'
-        response = dict()
+        stripe.api_key = api_key
+        response = stripe.checkout.Session.retrieve(transaction_id)
         try:
             if transaction_id:
                 response = super(StripePayment, self).send()
@@ -73,13 +71,13 @@ class StripePayment(Request, PaymentInterface):
                     user=user).filter(transaction_id=transaction_id)
                 if not tran:
                     transaction = {
-                        'amount': response['pricing']['local']['amount'],
+                        'amount': response.amount_total,
                         'transaction_id': transaction_id,
-                        'transaction_ref': response['data']['id'],
+                        'transaction_ref': response.id,
                         'platform': method,
                         'user': user,
-                        'status': response['status'],
-                        'payment_type': response['pricing_type']
+                        'status': response.payment_status,
+                        'payment_type': response.method
                     }
                     transact = Transaction.objects.create(**transaction)
                     transact.save()
