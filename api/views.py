@@ -161,7 +161,6 @@ class PaymentConfirmationView(APIView):
             method=method, user=user, api_key=api_key,
             transaction_ref=transaction_ref)
         if res['status'] == 'success':
-
             return Response(res, status=status.HTTP_200_OK)
         else:
             return Response({'message': res['message']}, status=status.HTTP_400_BAD_REQUEST)

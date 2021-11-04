@@ -78,6 +78,7 @@ class StripePayment(Request, PaymentInterface):
                         'status': response.payment_status,
                         'payment_type': response.payment_method_types[0]
                     }
+                    breakpoint()
                     transact = Transaction.objects.create(**transaction)
                     transact.save()
 
