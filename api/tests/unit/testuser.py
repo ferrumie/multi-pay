@@ -1,9 +1,11 @@
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APIClient
 from django.urls import reverse
 from rest_framework import status
 
+from api.tests.unit.base_test import BaseAPITestCase
 
-class UserTestCase(APITestCase):
+
+class UserTestCase(BaseAPITestCase):
     client = APIClient()
 
     register_user_data = {
@@ -35,6 +37,16 @@ class UserTestCase(APITestCase):
         "password": "Testnig@18",
         "password2": "Testnigg@18"
 
+    }
+
+    create_api_key_data = {
+        "api_key": "himTZj6xcFo4MvUd",
+        "platform": "COINBASE"
+    }
+
+    create_duplicate_api_key_data = {
+        "api_key": "erbefueubvueufryrbe",
+        "platform": "COINBASE"
     }
 
     def test_user_token_create(self):
@@ -74,17 +86,32 @@ class UserTestCase(APITestCase):
             'user with this Email Address already exists.', response.data['email'])
 
     def test_add_api_key_for_payment_platform(self):
-        self.client.login(email='nobody@nobody.niks', password='nobody')
-        # Create user
-        response = self.client.post(reverse('user_list'), self.create_user)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # Create Api Key
+        # Ensure that only authenticated user can do that
+        response = self.client.post(
+            reverse('apikeys'), self.create_api_key_data)
 
-    def test_non_unique_api_key(self):
-        pass
+        # this should fail
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+        # Login and post again
+        self.client.login(email='nobody@nobody.niks', password='nobody')
+        response = self.client.post(
+            reverse('apikeys'), self.create_api_key_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_adding_api_key_for_existing_platform(self):
         '''
         You can not add multiple api key for a single platform
         Test for the error raised
         '''
-        pass
+        self.client.login(email='nobody@nobody.niks', password='nobody')
+        response = self.client.post(
+            reverse('apikeys'), self.create_api_key_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # add same api key for another platform
+        response = self.client.post(
+            reverse('apikeys'), self.create_api_key_data)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['message'], 'You have already Added a Key for This platform')
