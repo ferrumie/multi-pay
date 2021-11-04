@@ -9,7 +9,11 @@ from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
-
+    '''
+    Custom user model to add more fields to the default one
+    and remove username
+    TODO: verify user through mail, non verified users can't use product
+    '''
     username = None
     email = models.EmailField(_('Email Address'), unique=True)
 
@@ -24,7 +28,7 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
-
+    # Set custom user manager
     objects = CustomUserManager()
 
     def __str__(self):
@@ -32,7 +36,11 @@ class User(AbstractUser):
 
 
 class UserApiKey(models.Model):
-    """Model for adding api key for different payment platforms"""
+    """
+    Model for adding api key for different payment platforms
+    TODO: add api_key limit, so a user will only be able to 
+            add more than three api keys after payment
+    """
 
     PAYMENT_CHOICES = (
         ('PAYPAL', 'paypal'),

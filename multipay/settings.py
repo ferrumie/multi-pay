@@ -98,10 +98,13 @@ DATABASES = {
         "PASSWORD": os.getenv("DB_PASSWORD"),
         "HOST": os.getenv("DB_HOST"),
         "PORT": os.getenv("DB_PORT"),
+        # Atomic transactions, roll back changes if request fails.
+        # All or Nothing
         'ATOMIC_REQUESTS': True,
     }
 }
 
+# Setup Active payment platforms for register
 ACTIVE_PAYMENT_PLATFORMS = {
     'rave_payment': 'RavePayment',
     'paystack': 'PaystackPayment',
@@ -127,6 +130,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# setup FE route and domain
+# To make integration easier
 UI_DOMAIN = os.getenv('UI_DOMAIN', 'http://localhost:8000/')
 UI_ROUTE = 'api/payment/confirm'
 

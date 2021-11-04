@@ -59,6 +59,8 @@ class ApiKeyView(ListCreateAPIView):
         user = request.user
         platform = request.data.get('platform')
         key = UserApiKey.objects.filter(user=user).filter(platform=platform)
+        # TODO: encrypt API keys before storing in db to make it safer
+
         if key:
             return Response(
                 {'message': 'You have already Added a Key for This platform'},

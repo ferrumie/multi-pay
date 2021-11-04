@@ -4,6 +4,10 @@ from django.utils.translation import gettext_lazy as _
 
 
 class Transaction(models.Model):
+    '''
+    Model to store transactions after they are being verified
+    Just to give the user a simple log of usage
+    '''
     amount = models.DecimalField(
         _("Plan Amount"), decimal_places=2, max_digits=12,
         blank=True, null=True)
@@ -25,5 +29,6 @@ class Transaction(models.Model):
 
     transaction_ref = models.CharField(max_length=250, blank=True)
 
+    # date the transaction was created from the payment platform
     date_created = models.DateTimeField(
         _('Date Created'), blank=True, null=True)
